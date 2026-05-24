@@ -30,4 +30,18 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_the_login_page_returns_a_successful_response(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_the_register_page_returns_a_successful_response(): void
+    {
+        $response = $this->get('/criar-conta');
+
+        $response->assertStatus(200);
+    }
 }
