@@ -3,6 +3,7 @@
 use App\Http\Controllers\CaducouDashboardController;
 use App\Http\Controllers\DebtorsController;
 use App\Http\Controllers\DebtsController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmailVerificationNoticeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', CaducouDashboardController::class)->name('home');
 Route::get('/devedores', DebtorsController::class)->name('debtors.index');
 Route::get('/dividas', DebtsController::class)->name('debts.index');
+Route::get('/perfil', ProfileController::class)->middleware('auth')->name('profile.show');
 Route::get('/login', LoginController::class)->name('login');
 Route::get('/criar-conta', RegisterController::class)->name('register');
 Route::post('/criar-conta', [RegisterController::class, 'store'])->middleware('throttle:6,1')->name('register.store');

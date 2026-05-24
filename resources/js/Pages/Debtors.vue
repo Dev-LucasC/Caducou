@@ -28,6 +28,7 @@ defineProps({
 
 const navItems = [
     { label: 'Painel', icon: LayoutDashboard, href: '/' },
+    { label: 'Perfil', icon: UserRound, href: '/perfil' },
     { label: 'Devedores', icon: Users, href: '/devedores', active: true },
     { label: 'Dividas', icon: FileText, href: '/dividas' },
     { label: 'Pagamentos', icon: CreditCard, href: '#' },

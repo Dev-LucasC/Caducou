@@ -14,6 +14,7 @@ import {
     Plus,
     Search,
     ShieldCheck,
+    UserRound,
     Users,
     WalletCards,
 } from '@lucide/vue';
@@ -33,6 +34,7 @@ const quickActions = [
 
 const navItems = [
     { label: 'Painel', icon: LayoutDashboard, href: '/', active: true },
+    { label: 'Perfil', icon: UserRound, href: '/perfil' },
     { label: 'Devedores', icon: Users, href: '/devedores' },
     { label: 'Dividas', icon: FileText, href: '/dividas' },
     { label: 'Pagamentos', icon: CreditCard, href: '#' },

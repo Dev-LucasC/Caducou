@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import {
     ArrowRight,
     Building2,
@@ -18,6 +18,22 @@ const checklist = [
     'Cobrancas sempre revisadas no MVP',
     'Dados financeiros isolados por conta',
 ];
+
+const form = useForm({
+    name: '',
+    email: '',
+    phone: '',
+    account_type: 'individual',
+    password: '',
+    password_confirmation: '',
+    terms_accepted: false,
+});
+
+function submit() {
+    form.post('/criar-conta', {
+        onFinish: () => form.reset('password', 'password_confirmation'),
+    });
+}
 </script>
 
 <template>
@@ -89,11 +105,11 @@ const checklist = [
                         </div>
                         <h2 class="text-3xl font-semibold leading-tight text-zinc-950">Comece com seu acesso de credor</h2>
                         <p class="mt-3 text-sm leading-6 text-zinc-600">
-                            Esta tela prepara o cadastro visual. A criacao real de usuario, validacao e hash de senha entram na spec de autenticacao.
+                            Crie sua conta com validacao de e-mail obrigatoria antes de usar recursos sensiveis de cobranca.
                         </p>
                     </div>
 
-                    <form class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
+                    <form class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm" @submit.prevent="submit">
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <label class="flex flex-col gap-1.5 sm:col-span-2">
                                 <span class="text-sm font-medium text-zinc-700">Nome completo</span>
@@ -101,11 +117,13 @@ const checklist = [
                                     <UserRound class="size-4 text-zinc-400" />
                                     <input
                                         type="text"
+                                        v-model="form.name"
                                         autocomplete="name"
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="Seu nome"
                                     />
                                 </span>
+                                <span v-if="form.errors.name" class="text-xs font-medium text-red-600">{{ form.errors.name }}</span>
                             </label>
 
                             <label class="flex flex-col gap-1.5 sm:col-span-2">
@@ -114,11 +132,13 @@ const checklist = [
                                     <Mail class="size-4 text-zinc-400" />
                                     <input
                                         type="email"
+                                        v-model="form.email"
                                         autocomplete="email"
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="voce@empresa.com"
                                     />
                                 </span>
+                                <span v-if="form.errors.email" class="text-xs font-medium text-red-600">{{ form.errors.email }}</span>
                             </label>
 
                             <label class="flex flex-col gap-1.5">
@@ -127,23 +147,26 @@ const checklist = [
                                     <Phone class="size-4 text-zinc-400" />
                                     <input
                                         type="tel"
+                                        v-model="form.phone"
                                         autocomplete="tel"
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="Opcional"
                                     />
                                 </span>
+                                <span v-if="form.errors.phone" class="text-xs font-medium text-red-600">{{ form.errors.phone }}</span>
                             </label>
 
                             <label class="flex flex-col gap-1.5">
                                 <span class="text-sm font-medium text-zinc-700">Tipo de uso</span>
                                 <span class="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 px-3 transition focus-within:border-zinc-400">
                                     <Building2 class="size-4 text-zinc-400" />
-                                    <select class="w-full bg-transparent text-sm outline-none">
-                                        <option>Pessoa fisica</option>
-                                        <option>Pequeno negocio</option>
-                                        <option>Prestador de servico</option>
+                                    <select v-model="form.account_type" class="w-full bg-transparent text-sm outline-none">
+                                        <option value="individual">Pessoa fisica</option>
+                                        <option value="small_business">Pequeno negocio</option>
+                                        <option value="service_provider">Prestador de servico</option>
                                     </select>
                                 </span>
+                                <span v-if="form.errors.account_type" class="text-xs font-medium text-red-600">{{ form.errors.account_type }}</span>
                             </label>
 
                             <label class="flex flex-col gap-1.5 sm:col-span-2">
@@ -152,6 +175,7 @@ const checklist = [
                                     <LockKeyhole class="size-4 text-zinc-400" />
                                     <input
                                         type="password"
+                                        v-model="form.password"
                                         autocomplete="new-password"
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="Crie uma senha segura"
@@ -160,17 +184,33 @@ const checklist = [
                                         <Eye class="size-4" />
                                     </button>
                                 </span>
+                                <span v-if="form.errors.password" class="text-xs font-medium text-red-600">{{ form.errors.password }}</span>
+                            </label>
+
+                            <label class="flex flex-col gap-1.5 sm:col-span-2">
+                                <span class="text-sm font-medium text-zinc-700">Confirmar senha</span>
+                                <span class="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 px-3 transition focus-within:border-zinc-400">
+                                    <LockKeyhole class="size-4 text-zinc-400" />
+                                    <input
+                                        type="password"
+                                        v-model="form.password_confirmation"
+                                        autocomplete="new-password"
+                                        class="w-full text-sm outline-none placeholder:text-zinc-400"
+                                        placeholder="Repita a senha"
+                                    />
+                                </span>
                             </label>
 
                             <label class="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 sm:col-span-2">
-                                <input type="checkbox" class="mt-1 size-4 rounded border-zinc-300 text-zinc-950" />
+                                <input v-model="form.terms_accepted" type="checkbox" class="mt-1 size-4 rounded border-zinc-300 text-zinc-950" />
                                 <span class="text-sm leading-5 text-zinc-600">
                                     Entendo que dados de devedores serao tratados somente para controle de dividas e cobrancas autorizadas.
                                 </span>
                             </label>
+                            <span v-if="form.errors.terms_accepted" class="text-xs font-medium text-red-600 sm:col-span-2">{{ form.errors.terms_accepted }}</span>
 
-                            <button type="button" class="flex h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:col-span-2">
-                                Criar conta
+                            <button type="submit" :disabled="form.processing" class="flex h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2">
+                                {{ form.processing ? 'Criando conta...' : 'Criar conta' }}
                                 <ArrowRight class="size-4" />
                             </button>
                         </div>

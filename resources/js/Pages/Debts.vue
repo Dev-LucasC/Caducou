@@ -15,6 +15,7 @@ import {
     Search,
     ShieldCheck,
     SlidersHorizontal,
+    UserRound,
     Users,
     WalletCards,
 } from '@lucide/vue';
@@ -27,6 +28,7 @@ defineProps({
 
 const navItems = [
     { label: 'Painel', icon: LayoutDashboard, href: '/' },
+    { label: 'Perfil', icon: UserRound, href: '/perfil' },
     { label: 'Devedores', icon: Users, href: '/devedores' },
     { label: 'Dividas', icon: FileText, href: '/dividas', active: true },
     { label: 'Pagamentos', icon: CreditCard, href: '#' },
