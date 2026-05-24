@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import SidebarUserProfile from '../Components/SidebarUserProfile.vue';
 import {
     ArrowRight,
     Bell,
@@ -9,7 +10,6 @@ import {
     CreditCard,
     FileText,
     LayoutDashboard,
-    LockKeyhole,
     Mail,
     Plus,
     Search,
@@ -90,15 +90,7 @@ function statusClass(tone) {
                     </nav>
                 </div>
 
-                <section class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                    <div class="mb-3 flex items-center gap-2 text-sm font-semibold text-zinc-900">
-                        <LockKeyhole class="size-4 text-teal-700" />
-                        LGPD ativo
-                    </div>
-                    <p class="text-xs leading-5 text-zinc-600">
-                        Coleta minima, revisao humana para cobrancas e trilha de auditoria nas acoes sensiveis.
-                    </p>
-                </section>
+                <SidebarUserProfile />
             </div>
         </aside>
 
