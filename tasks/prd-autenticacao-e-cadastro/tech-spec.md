@@ -1,6 +1,6 @@
 # Tech Spec — MVP 1: Autenticação, sessões e autorização
 
-**Status:** RASCUNHO — requer aprovação do responsável pelo produto antes de implementação (SDD).
+**Status:** APROVADA PELO RESPONSÁVEL PELO PRODUTO em 2026-10-21 para implementação isolada na branch do MVP; integração PostgreSQL/SMTP e liberação pública exigem homologação adicional.
 **Base:** `tasks/prd-autenticacao-e-cadastro/prd.md` e `.agents/POLITICA_DE_TRABALHO.md`.
 **Dependência para homologação na Vercel:** PostgreSQL persistente + serviço SMTP transacional.
 
@@ -98,8 +98,8 @@ Credenciais erradas, excesso de tentativas, sessão expirada, CSRF inválido, e-
 - Abertura pública do MVP, dados financeiros reais e merge direto para `main`.
 
 ## 11. Decisões pendentes de aprovação
-1. Aprovar incluir recuperação de senha no MVP 1, apesar do PRD atual excluir esse fluxo.
-2. Confirmar login social Google/Apple **após** MVP email/senha (sujeito a Tech Spec própria).
+1. **APROVADO:** incluir recuperação de senha no MVP 1, apesar do PRD atual excluir esse fluxo.
+2. **APROVADO:** login social Google/Apple **após** MVP email/senha (sujeito a Tech Spec própria).
 3. Aprovar o uso de PostgreSQL gerenciado + SMTP externo no marco 2 (fornecedor ainda não escolhido).
-4. Aprovar bloquear Dashboard e módulos de demonstração a visitantes na futura versão autenticada.
+4. **APROVADO:** bloquear Dashboard e módulos de demonstração a visitantes na futura versão autenticada.
 5. Definir janela mínima de retenção de registros de auditoria.
