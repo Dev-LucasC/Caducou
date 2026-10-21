@@ -3,6 +3,23 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+// In preview, fail closed if Vercel's broad Neon integration points at a
+// different endpoint than the manually isolated Neon branch.
+// The comparison checks only hostnames and never logs database credentials.
+$postgresUrl = env('DB_URL') ?: env('DATABASE_URL');
+$expectedEndpoint = trim((string) env('DB_EXPECTED_ENDPOINT', ''));
+
+if (env('DB_CONNECTION') === 'pgsql' && $expectedEndpoint !== '') {
+    $actualHost = parse_url((string) $postgresUrl, PHP_URL_HOST);
+
+    if (! is_string($actualHost) || ! (
+        str_starts_with($actualHost, $expectedEndpoint.'.') ||
+        str_starts_with($actualHost, $expectedEndpoint.'-pooler.')
+    )) {
+        throw new RuntimeException('PostgreSQL endpoint does not match the approved preview branch.');
+    }
+}
+
 return [
 
     /*
@@ -86,7 +103,9 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
+            // Vercel's managed Neon integration supplies DATABASE_URL, not DB_URL.
+            // Keep DB_URL as an explicit override for other environments.
+            'url' => $postgresUrl,
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'laravel'),
