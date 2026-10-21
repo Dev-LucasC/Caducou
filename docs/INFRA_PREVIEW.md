@@ -9,6 +9,15 @@
 - Preview existente da branch `chore/vercel-laravel-preview`: `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, `SESSION_DRIVER=cookie`, `CACHE_STORE=array`, `MAIL_MAILER=log`.
 - Auth implementada na branch `spec/mvp-auth-security` e testada isoladamente, mas ainda **não homologada contra banco persistente**.
 
+## 0. Neon integrado à Vercel — checagem em 2026-10-21
+
+- A Vercel agora apresenta credenciais do Neon `DATABASE_URL`, `POSTGRES_URL`, `NEON_PROJECT_ID`, etc. para **Preview e Production simultaneamente**.
+- As variáveis existem, mas **não comprovam** aplicação de migrations, isolamento do banco ou conexão da aplicação.
+- Por segurança, **não usar essa ligação para migrations** antes de confirmar uma branch ou banco Neon dedicado à homologação e credenciais separadas de produção.
+- `config/database.php` aceita `DATABASE_URL` somente quando `DB_CONNECTION=pgsql`, mantendo `DB_URL` como prioridade. Nenhuma credencial entra no GitHub.
+- No Vercel, criar/ajustar variáveis Laravel apenas em `Preview` com `gitBranch=chore/mvp-postgres-smtp-preview`, após validar o isolamento. Não modificar as variáveis de `Production` e nem as da branch antiga em funcionamento.
+- A conexão Neon já injeta um URL completo. Não duplicar `DB_HOST`/`DB_PASSWORD` se `DATABASE_URL` correto estiver disponível.
+
 ## 1. Provedores propostos (necessita conexão/aceite do proprietário)
 
 1. **Neon PostgreSQL** para banco persistente de homologação; projeto de desenvolvimento isolado da futura produção. Conectar a conta/autorizar a criação pelo plugin Neon (ou interface oficial, se preferir).
@@ -26,13 +35,13 @@ Os valores abaixo são **nomes/configuração**, não credenciais. As credenciai
 | `APP_URL` | URL HTTPS **real** do preview usado para receber links de e-mail |
 | `APP_KEY` | Chave criptográfica estável do Laravel (manter a atual somente no escopo apropriado; nunca divulgar) |
 | `DB_CONNECTION` | `pgsql` |
-| `DB_HOST` | Host Neon **pooled** para tráfego da aplicação |
-| `DB_PORT` | `5432` |
-| `DB_DATABASE` | Nome do banco de homologação |
-| `DB_USERNAME` | Usuário dedicado de menor privilégio |
-| `DB_PASSWORD` | Segredo do banco |
+| `DATABASE_URL` | **Já criado pela integração Vercel-Neon**, requer confirmação de isolamento; conexão com pooler para tráfego da aplicação |
+| `DB_PORT` | Não definir quando o URL completo já contém a porta |
+| `DB_DATABASE` | Não definir quando o URL completo já contém o banco |
+| `DB_USERNAME` | Não definir quando o URL completo já contém o usuário |
+| `DB_PASSWORD` | Não definir quando o URL completo já contém a senha |
 | `DB_SSLMODE` | `require` |
-| `DB_URL` | **Não definir** junto de DB_HOST e demais campos, para evitar sobreposição |
+| `DB_URL` | Não definir; `config/database.php` resolve `DATABASE_URL` fornecido pela integração, quando `DB_CONNECTION=pgsql` |
 | `SESSION_DRIVER` | `database` |
 | `CACHE_STORE` | `database` (inclui rate limit entre instâncias) |
 | `QUEUE_CONNECTION` | `sync` temporariamente, até existir worker persistente |
@@ -79,7 +88,7 @@ Os valores abaixo são **nomes/configuração**, não credenciais. As credenciai
 
 ## 5. Dependências não concluídas
 
-- Conectar/autorizar Neon na conta de propriedade do projeto e provisionar DB **de preview**.
+- Neon/Vercel conectados; **confirmar isolamento de banco/branch exclusivo para preview**, já que as variáveis automáticas também atingem Production.
 - Configurar Resend com domínio de envio verificado e chave própria.
 - Inserir segredos no ambiente Vercel da branch de homologação; testar conectividade e aplicar migrations.
 - Aprovar testes ponta a ponta e revisão de custos/backup antes da ativação.
