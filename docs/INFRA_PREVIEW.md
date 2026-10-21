@@ -18,6 +18,17 @@
 - No Vercel, criar/ajustar variáveis Laravel apenas em `Preview` com `gitBranch=chore/mvp-postgres-smtp-preview`, após validar o isolamento. Não modificar as variáveis de `Production` e nem as da branch antiga em funcionamento.
 - A conexão Neon já injeta um URL completo. Não duplicar `DB_HOST`/`DB_PASSWORD` se `DATABASE_URL` correto estiver disponível.
 
+## Atualização operacional — 21/10/2026, após criação da branch Neon
+
+- Responsável criou branch Neon `caducou-preview` baseada em `main`. A captura de tela forneceu o prefixo do endpoint `ep-tiny-smoke-b7tqkguv`.
+- Vercel contém `DATABASE_URL` e `DATABASE_URL_UNPOOLED` tipo **Sensitive**, alocados somente em Preview/`chore/mvp-postgres-smtp-preview`; as variantes personalizadas `DB_URL` e `DB_URL_UNPOOLED` foram excluídas pelo responsável. As variáveis da integração Neon ainda estão disponíveis globalmente a Preview/Production; a conexão específica da branch deve prevalecer em preview.
+- O campo secreto de variáveis Sensitive não é retornado pela API Vercel, então **não foi possível provar diretamente** que os endpoints das URLs são os esperados; inspeção visual pelo proprietário no painel ainda é necessária.
+- Adicionada verificação `DB_EXPECTED_ENDPOINT`: quando `DB_CONNECTION=pgsql`, Laravel aborta na inicialização caso o host da conexão não comece com o prefixo permitido (`ep-tiny-smoke-b7tqkguv` ou `ep-tiny-smoke-b7tqkguv-pooler`). É uma barreira contra migrations acidentais no banco Neon `main`.
+- Vercel, somente na branch do preview, agora tem `DB_EXPECTED_ENDPOINT=ep-tiny-smoke-b7tqkguv`, `DB_SSLMODE=require` e `DB_CONNECTION=pgsql`; `SESSION_DRIVER=cookie`, `CACHE_STORE=array` e `MAIL_MAILER=array` permanecem temporariamente até aplicar migrations e SMTP real.
+- Sandbox sem credenciais reais: `npm run build` e `php artisan test` **25 testes, 167 asserts, 0 falhas**; endpoint incorreto falhou como esperado (código 1) e endpoint esperado foi aceito na inicialização do Laravel (código 0), mas **conexão real ao Neon não foi testada**.
+- **Não disparar redeploy agora**: PostgreSQL ainda não tem migrations aplicadas e a API Vercel não expõe credenciais Sensitive nem injeta segredos do projeto no Vercel Sandbox. Para migrations seguras é necessário um executor efêmero confiável com segredo acessível no ambiente ou execução local usando credenciais obtidas diretamente dos painéis, sem postá-las em chat.
+- A implantação anterior `dpl_DFFaXNRyyGyC8D9nPfaVoAALiKcY` foi READY sob `DB_CONNECTION=sqlite`; mudanças posteriores de variáveis só passam a valer em novo deploy. `main` permanece intocada.
+
 ## 1. Provedores propostos (necessita conexão/aceite do proprietário)
 
 1. **Neon PostgreSQL** para banco persistente de homologação; projeto de desenvolvimento isolado da futura produção. Conectar a conta/autorizar a criação pelo plugin Neon (ou interface oficial, se preferir).
