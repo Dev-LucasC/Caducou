@@ -40,16 +40,16 @@ Artisan::command('caducou:infra-check', function () {
 
     if (config('database.default') === 'pgsql') {
         try {
-            \\Illuminate\\Support\\Facades\\DB::connection()->getPdo();
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
 
             $this->info('[OK] PostgreSQL connection established');
 
             foreach (['users', 'sessions', 'password_reset_tokens', 'cache', 'cache_locks'] as $table) {
-                $exists = \\Illuminate\\Support\\Facades\\Schema::hasTable($table);
+                $exists = \Illuminate\Support\Facades\Schema::hasTable($table);
                 $this->line(($exists ? '[OK] ' : '[FAIL] ').'Database table: '.$table);
                 $failed = $failed || ! $exists;
             }
-        } catch (\\Throwable $e) {
+        } catch (\Throwable $e) {
             // Do not expose connection strings, SQL or credentials from exception messages.
             $this->error('[FAIL] Could not connect to PostgreSQL. Check private configuration and provider status.');
             $failed = true;
