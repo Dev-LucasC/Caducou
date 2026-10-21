@@ -1,5 +1,6 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import {
     ArrowRight,
     Eye,
@@ -9,6 +10,14 @@ import {
     Smartphone,
     WalletCards,
 } from '@lucide/vue';
+
+const page = usePage();
+const form = useForm({ email: '', password: '', remember: false });
+const showPassword = ref(false);
+
+function submit() {
+    form.post('/login', { onFinish: () => form.reset('password') });
+}
 </script>
 
 <template>
@@ -44,15 +53,19 @@ import {
                         </p>
                     </div>
 
-                    <form class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
+                    <form class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm" @submit.prevent="submit">
                         <div class="flex flex-col gap-4">
+                            <p v-if="page.props.flash?.status" role="status" class="rounded-lg bg-teal-50 p-3 text-sm text-teal-800">{{ page.props.flash.status }}</p>
+                            <p v-if="form.errors.email || form.errors.password" role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.errors.email || form.errors.password }}</p>
                             <label class="flex flex-col gap-1.5">
                                 <span class="text-sm font-medium text-zinc-700">E-mail</span>
                                 <span class="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 px-3 transition focus-within:border-zinc-400">
                                     <Mail class="size-4 text-zinc-400" />
                                     <input
                                         type="email"
+                                        v-model="form.email"
                                         autocomplete="email"
+                                        required
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="voce@empresa.com"
                                     />
@@ -62,31 +75,33 @@ import {
                             <label class="flex flex-col gap-1.5">
                                 <span class="flex items-center justify-between gap-3">
                                     <span class="text-sm font-medium text-zinc-700">Senha</span>
-                                    <a href="#" class="text-sm font-semibold text-teal-700 hover:text-teal-800">Esqueci minha senha</a>
+                                    <Link href="/esqueci-senha" class="text-sm font-semibold text-teal-700 hover:text-teal-800">Esqueci minha senha</Link>
                                 </span>
                                 <span class="flex h-11 items-center gap-2 rounded-lg border border-zinc-200 px-3 transition focus-within:border-zinc-400">
                                     <LockKeyhole class="size-4 text-zinc-400" />
                                     <input
-                                        type="password"
+                                         :type="showPassword ? 'text' : 'password'"
+                                        v-model="form.password"
                                         autocomplete="current-password"
+                                        required
                                         class="w-full text-sm outline-none placeholder:text-zinc-400"
                                         placeholder="Sua senha"
                                     />
-                                    <button type="button" class="flex size-8 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-100" title="Mostrar senha">
+                                    <button type="button" class="flex size-8 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-100" :aria-label="showPassword ? 'Ocultar senha' : 'Mostrar senha'" @click="showPassword = !showPassword">
                                         <Eye class="size-4" />
                                     </button>
                                 </span>
                             </label>
 
                             <label class="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                                <input type="checkbox" class="mt-1 size-4 rounded border-zinc-300 text-zinc-950" />
+                                <input v-model="form.remember" type="checkbox" class="mt-1 size-4 rounded border-zinc-300 text-zinc-950" />
                                 <span class="text-sm leading-5 text-zinc-600">
                                     Manter conectado neste dispositivo confiavel.
                                 </span>
                             </label>
 
-                            <button type="button" class="mt-1 flex h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 text-sm font-semibold text-white transition hover:bg-zinc-800">
-                                Entrar
+                            <button type="submit" :disabled="form.processing" class="mt-1 flex h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60">
+                                {{ form.processing ? 'Entrando...' : 'Entrar' }}
                                 <ArrowRight class="size-4" />
                             </button>
                         </div>
