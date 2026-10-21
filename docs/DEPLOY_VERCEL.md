@@ -9,6 +9,7 @@ O projeto é Laravel 12 + Inertia/Vue/Vite, não um Vite SPA. A Vercel precisa d
 - Banco Postgres persistente: `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT=5432`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SSLMODE=require`
 - `SESSION_DRIVER=database`, `SESSION_SECURE_COOKIE=true`, `QUEUE_CONNECTION=sync`, `CACHE_STORE=database`
 - `LOG_CHANNEL=stderr`, `LOG_LEVEL=warning`, `VIEW_COMPILED_PATH=/tmp`
+- `TRUSTED_PROXIES=*` (apenas na hospedagem atrás de proxy confiável, como Vercel; deve estar no ambiente do processo, não somente em arquivo `.env`). Permite ao Laravel respeitar `X-Forwarded-Proto: https` e gerar URLs de CSS/JS HTTPS.
 - Cache Laravel: `APP_CONFIG_CACHE=/tmp/config.php`, `APP_EVENTS_CACHE=/tmp/events.php`, `APP_PACKAGES_CACHE=/tmp/packages.php`, `APP_ROUTES_CACHE=/tmp/routes.php`, `APP_SERVICES_CACHE=/tmp/services.php`
 - E-mail de produção: `MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`
 
@@ -23,3 +24,10 @@ O projeto é Laravel 12 + Inertia/Vue/Vite, não um Vite SPA. A Vercel precisa d
 O botão de login ainda não está ligado ao backend; dashboard, devedores e dívidas apresentam dados demonstrativos; não há migrations para as entidades financeiras; rotas de negócio não estão protegidas. **Não liberar cadastro público nem dados reais nesta etapa.**
 
 O runtime Vercel não garante persistência do filesystem. Anexos, cache persistente, filas, jobs e sessões necessitam arquitetura externa. Há risco de incompatibilidade PHP/serverless; validar no deploy preview antes de aprovar a PR.
+
+
+## Diagnóstico da tela branca (2026-10-21)
+- Em teste HTTPS externo, o Laravel gerou URLs `http://...` para CSS/JS por não reconhecer o protocolo original atrás do proxy. Navegadores bloquearam os recursos inseguros.
+- Corrigido condicionalmente por `TRUSTED_PROXIES=*` em `bootstrap/app.php`, restrito ao ambiente configurado.
+- Testes repetidos em um sandbox isolado: `npm run build` concluído; 15 testes PHPUnit com 83 asserções passaram; Chrome automatizado renderizou `/`, `/login`, `/dividas` e `/devedores` em HTTPS, sem erros de console ou solicitações falhadas.
+- O preview Vercel possui autenticação de implantação (SSO); `READY` não é evidência de funcionamento do PHP. Após novo deploy, confirmar navegação com a conta autorizada e inspecionar as respostas dos recursos.
