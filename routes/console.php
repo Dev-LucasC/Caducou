@@ -28,7 +28,7 @@ Artisan::command('caducou:infra-check', function () {
         'Shared database cache enabled' => config('cache.default') === 'database',
         'SMTP mailer enabled' => config('mail.default') === 'smtp',
         'SMTP credentials configured' => filled(config('mail.mailers.smtp.username')) && filled(config('mail.mailers.smtp.password')),
-        'Verified sender configured' => filled(config('mail.from.address')),
+        'Sender address configured (verify DNS separately)' => filled(config('mail.from.address')),
     ];
 
     $failed = false;
