@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+vendor
+tests
+tasks
+.agents
+.vscode
+.idea
+compose.yaml
+storage/logs/*.log
+public/hot
