@@ -2,46 +2,44 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase;
 
-        $response->assertStatus(200);
+    public function test_financial_routes_redirect_guests_to_login(): void
+    {
+        foreach (['/', '/devedores', '/dividas', '/perfil'] as $path) {
+            $this->get($path)->assertRedirect('/login');
+        }
     }
 
-    public function test_the_debtors_page_returns_a_successful_response(): void
+    public function test_financial_routes_redirect_unverified_users_to_verification(): void
     {
-        $response = $this->get('/devedores');
+        $user = User::factory()->unverified()->create();
 
-        $response->assertStatus(200);
+        foreach (['/', '/devedores', '/dividas', '/perfil'] as $path) {
+            $this->actingAs($user)->get($path)->assertRedirect('/email/confirmacao');
+        }
     }
 
-    public function test_the_debts_page_returns_a_successful_response(): void
+    public function test_verified_user_can_open_the_financial_routes(): void
     {
-        $response = $this->get('/dividas');
+        $user = User::factory()->create();
 
-        $response->assertStatus(200);
+        foreach (['/', '/devedores', '/dividas', '/perfil'] as $path) {
+            $this->actingAs($user)->get($path)->assertOk();
+        }
     }
 
-    public function test_the_login_page_returns_a_successful_response(): void
+    public function test_guest_auth_pages_are_available(): void
     {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
-    }
-
-    public function test_the_register_page_returns_a_successful_response(): void
-    {
-        $response = $this->get('/criar-conta');
-
-        $response->assertStatus(200);
+        $this->get('/login')->assertOk();
+        $this->get('/criar-conta')->assertOk();
+        $this->get('/esqueci-senha')->assertOk();
+        $this->get('/redefinir-senha/test-token?email=teste@example.com')->assertOk();
     }
 }

@@ -1,6 +1,6 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
-import { CheckCircle2, LogIn, ShieldCheck, UserRound } from '@lucide/vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { CheckCircle2, LogIn, LogOut, ShieldCheck, UserRound } from '@lucide/vue';
 import { computed } from 'vue';
 
 const page = usePage();
@@ -22,8 +22,8 @@ const initials = computed(() => {
 </script>
 
 <template>
+    <div v-if="user" class="grid gap-2">
     <Link
-        v-if="user"
         href="/perfil"
         class="block rounded-lg border border-zinc-200 bg-zinc-50 p-3 transition hover:border-zinc-300 hover:bg-white"
     >
@@ -53,6 +53,12 @@ const initials = computed(() => {
             </span>
         </div>
     </Link>
+
+    <button type="button" class="flex w-full items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-xs font-semibold text-zinc-600 hover:bg-zinc-100" @click="router.post('/logout')">
+        <LogOut class="size-4" />
+        Sair da conta
+    </button>
+    </div>
 
     <Link
         v-else

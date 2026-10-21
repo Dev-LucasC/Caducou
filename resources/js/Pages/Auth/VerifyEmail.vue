@@ -1,9 +1,10 @@
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import {
     ArrowRight,
     CheckCircle2,
     Mail,
+    LogOut,
     RotateCw,
     ShieldCheck,
     WalletCards,
@@ -62,10 +63,10 @@ function resend() {
                             <RotateCw class="size-4" />
                             {{ form.processing ? 'Enviando...' : 'Reenviar e-mail' }}
                         </button>
-                        <Link href="/login" class="flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-200 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-100">
-                            Ir para login
-                            <ArrowRight class="size-4" />
-                        </Link>
+                        <button type="button" class="flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-200 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-100" @click="router.post('/logout')">
+                            Sair da conta
+                            <LogOut class="size-4" />
+                        </button>
                     </div>
                 </div>
             </div>
